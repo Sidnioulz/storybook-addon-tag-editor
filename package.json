@@ -1,0 +1,104 @@
+{
+  "name": "storybook-addon-tag-editor",
+  "version": "0.1.0",
+  "description": "Edit story tags from the Storybook sidebar",
+  "keywords": [
+    "storybook-addon",
+    "tags",
+    "organize"
+  ],
+  "license": "MIT",
+  "author": "Steve Dodier-Lazaro",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./preset": "./dist/preset.js",
+    "./manager": "./dist/manager.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "*.js",
+    "*.d.ts"
+  ],
+  "scripts": {
+    "prebuild": "node -e \"fs.rmSync('./dist', { recursive: true, force: true })\"",
+    "build": "tsup",
+    "build-storybook": "storybook build",
+    "build:watch": "npm run build -- --watch",
+    "check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "lint": "eslint --cache .",
+    "lint:fix": "pnpm lint --fix",
+    "start": "run-p build:watch \"storybook --quiet\"",
+    "storybook": "storybook dev -p ${PORT:-6006}",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@storybook/addon-docs": "https://pkg.pr.new/@storybook/addon-docs@aa7e796",
+    "@storybook/icons": "^2.0.0",
+    "@storybook/react-vite": "https://pkg.pr.new/@storybook/react-vite@aa7e796",
+    "@types/node": "^20",
+    "@types/react": "^18.2.65",
+    "@types/react-dom": "^18.2.21",
+    "@vitejs/plugin-react": "^4.7.0",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-storybook": "next",
+    "npm-run-all2": "^8.0.4",
+    "prettier": "^3.6.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "storybook": "https://pkg.pr.new/storybook@aa7e796",
+    "ts-dedent": "^2.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.44.1",
+    "vite": "^7.0.5"
+  },
+  "peerDependencies": {
+    "storybook": "*"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bundler": {
+    "managerEntries": [
+      "src/manager.tsx"
+    ],
+    "previewEntries": [
+      "src/index.ts"
+    ],
+    "nodeEntries": [
+      "src/preset.ts"
+    ]
+  },
+  "storybook": {
+    "displayName": "Tag Editor",
+    "supportedFrameworks": [
+      "react",
+      "vue",
+      "angular",
+      "web-components",
+      "ember",
+      "html",
+      "svelte",
+      "preact",
+      "react-native"
+    ]
+  },
+  "packageManager": "pnpm@10.22.0+sha512.bf049efe995b28f527fd2b41ae0474ce29186f7edcb3bf545087bd61fbbebb2bf75362d1307fda09c2d288e1e499787ac12d4fcb617a974718a6051f2eee741c",
+  "dependencies": {
+    "remark-mdx": "^3.1.1",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0"
+  }
+}

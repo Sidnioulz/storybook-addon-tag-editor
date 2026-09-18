@@ -1,0 +1,13 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+import * as ButtonStories from './Button.stories';
+
+{/* Attached to the Button stories, so its tags inherit from the component's meta. */}
+
+<Meta of={ButtonStories} name="Notes" tags={['needs-copy']} />
+
+# Button notes
+
+This page is attached to the Button component. Open its context menu in the sidebar and pick
+**Edit tags**: tags declared on `Button.stories.ts` show up as inherited through the component,
+and the ones written here are declared locally.
