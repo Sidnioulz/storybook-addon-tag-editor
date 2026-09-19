@@ -1,4 +1,4 @@
-import addonDocs from "@storybook/addon-docs";
+import addonDocs from '@storybook/addon-docs';
 import { definePreview } from '@storybook/react-vite';
 
 import tagEditor from '../src/index';
