@@ -59,7 +59,7 @@
     "@semantic-release/github": "^12.0.9",
     "@semantic-release/npm": "^13.1.5",
     "@storybook/addon-docs": "https://pkg.pr.new/@storybook/addon-docs@aa7e796",
-    "@storybook/addon-vitest": "11.0.0-alpha.0",
+    "@storybook/addon-vitest": "https://pkg.pr.new/@storybook/addon-vitest@aa7e796",
     "@storybook/icons": "^2.0.0",
     "@storybook/react-vite": "https://pkg.pr.new/@storybook/react-vite@aa7e796",
     "@testing-library/jest-dom": "^7.0.1",

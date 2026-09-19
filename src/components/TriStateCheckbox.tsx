@@ -1,5 +1,5 @@
 import type { InputHTMLAttributes } from 'react';
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 
 import { Form } from 'storybook/internal/components';
 
@@ -21,7 +21,9 @@ export interface TriStateCheckboxProps extends InputHTMLAttributes<HTMLInputElem
 export const TriStateCheckbox = ({ indeterminate = false, ...props }: TriStateCheckboxProps) => {
   const wrapperRef = useRef<HTMLSpanElement | null>(null);
 
-  useEffect(() => {
+  // Laid out rather than deferred: the property lands in the same commit as the render that
+  // implies it, so the box never paints in the wrong state and readers never observe a stale one.
+  useLayoutEffect(() => {
     const input = wrapperRef.current?.querySelector('input');
     if (input) {
       input.indeterminate = indeterminate;

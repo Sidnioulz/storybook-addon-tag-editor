@@ -515,11 +515,12 @@ export const TagEditorPopover = ({ entry, triggerRef, io, onClose }: TagEditorPo
                 <MutedText>{isDirty ? `${dirtyCount} unsaved change${dirtyCount === 1 ? '' : 's'}` : ''}</MutedText>
                 <FooterActions>
                   {isDirty && (
-                    <Button size="small" variant="ghost" onClick={() => setDraft(saved)}>
+                    <Button ariaLabel={false} size="small" variant="ghost" onClick={() => setDraft(saved)}>
                       Reset
                     </Button>
                   )}
                   <SaveButton
+                    ariaLabel={false}
                     size="small"
                     variant="solid"
                     disabled={!isDirty || saving}

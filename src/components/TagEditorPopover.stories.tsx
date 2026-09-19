@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import type { API_HashEntry } from 'storybook/internal/types';
 
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import { ThemeProvider, ensure, themes } from 'storybook/theming';
 
 import { combineTags, DEFAULT_TAGS } from '../tag-model';
@@ -127,7 +127,8 @@ export const InheritedStatesAreMixed: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const checkbox = await canvas.findByRole('checkbox', { name: /Declare foo/ });
-    await expect(checkbox).toBePartiallyChecked();
+    // `indeterminate` is a DOM property rather than an attribute, so wait for it to settle.
+    await waitFor(() => expect(checkbox).toBePartiallyChecked());
 
     // Declaring it locally makes the row determinate.
     await userEvent.click(checkbox);
@@ -140,8 +141,12 @@ export const ExcludingAnInheritedTag: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(await canvas.findByRole('button', { name: 'Add !foo tag' }));
-    // The row now reads !foo and offers to go back to the inherited value.
-    await expect(await canvas.findByRole('button', { name: 'Replace with foo tag' })).toBeVisible();
+
+    // The row now reads !foo, declared on the entry.
+    await expect(await canvas.findByRole('checkbox', { name: /Stop declaring !foo/ })).toBeChecked();
+    // It offers to put foo back. The button only becomes visible on hover, which a synthetic
+    // pointer cannot trigger, so assert that it is there rather than that it is shown.
+    await expect(canvas.getByRole('button', { name: 'Replace with foo tag' })).toBeInTheDocument();
   },
 };
 
