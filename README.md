@@ -76,9 +76,9 @@
 }
 ```
 
-----
-<!-- End temporary release notice -->
+---
 
+<!-- End temporary release notice -->
 
 This addon needs Storybook 11 and Node 22.12 or later. Install it in one step with the Storybook CLI:
 
@@ -87,6 +87,7 @@ pnpx storybook add storybook-addon-tag-editor
 ```
 
 Or install it manually, by adding the development dependency and editing `main.ts` and `preview.ts`:
+
 ```sh
 pnpm add -D storybook-addon-tag-editor
 ```
