@@ -30,46 +30,6 @@ jobs:
       - name: Check for linter errors
         run: pnpm lint
 
-  test:
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
-    needs: build
-    strategy:
-      matrix:
-        node-version: [22.12, 24]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v7
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build addon
-        run: pnpm build
-
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Run tests
-        run: pnpm test:coverage
-
-      - name: Upload coverage reports to Codecov
-        if: matrix.node-version == '22.12'
-        uses: codecov/codecov-action@v7
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-
   build:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
@@ -97,5 +57,93 @@ jobs:
       - name: Build addon
         run: pnpm build
 
+      # The test job loads the addon through .storybook/local-preset.ts, which
+      # imports from dist.
+      - name: Upload addon build
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist-${{ matrix.node-version }}
+          path: dist
+          retention-days: 1
+          if-no-files-found: error
+
+      # --stats-json writes preview-stats.json, which Chromatic needs for TurboSnap.
       - name: Build Storybook
-        run: pnpm build-storybook
+        run: pnpm build-storybook --stats-json
+
+      - name: Upload Storybook build
+        if: matrix.node-version == '22.12'
+        uses: actions/upload-artifact@v7
+        with:
+          name: storybook-static
+          path: storybook-static
+          retention-days: 1
+          if-no-files-found: error
+
+  test:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    needs: build
+    strategy:
+      matrix:
+        node-version: [22.12, 24]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Download addon build
+        uses: actions/download-artifact@v8
+        with:
+          name: dist-${{ matrix.node-version }}
+          path: dist
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run tests
+        run: pnpm test:coverage
+
+      - name: Upload coverage reports to Codecov
+        if: matrix.node-version == '22.12'
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  chromatic:
+    name: Run Chromatic
+    runs-on: ubuntu-latest
+    # TODO: remove once CHROMATIC_PROJECT_TOKEN is set, so visual tests gate pull requests.
+    if: "vars.CHROMATIC_ENABLED == 'true' && !contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    needs: build
+    steps:
+      # Chromatic reads the git history to pick a baseline build.
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Download Storybook build
+        uses: actions/download-artifact@v8
+        with:
+          name: storybook-static
+          path: storybook-static
+
+      - name: Run Chromatic
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          storybookBuildDir: storybook-static
