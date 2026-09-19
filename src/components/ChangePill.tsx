@@ -10,18 +10,12 @@ const Glyph = styled.svg(({ theme }) => ({
 }));
 
 /**
- * The sidebar's change-detection marks: a plus for a newly declared tag, a dot for a changed one.
+ * The sidebar's change-detection mark. Every pending edit rewrites the entry's tags, so they all
+ * read as a modification rather than distinguishing additions.
  */
-export const ChangePill = ({ change }: { change: 'added' | 'modified' }) => (
-  <Glyph viewBox="0 0 14 14" role="img" aria-label={change === 'added' ? 'Added' : 'Modified'}>
-    <title>{change === 'added' ? 'Added' : 'Modified'}</title>
-    {change === 'added' ? (
-      <>
-        <rect x="6" y="3.5" width="2" height="7" rx="1" fill="currentColor" />
-        <rect x="3.5" y="6" width="7" height="2" rx="1" fill="currentColor" />
-      </>
-    ) : (
-      <circle cx="7" cy="7" r="3" fill="currentColor" />
-    )}
+export const ChangePill = () => (
+  <Glyph viewBox="0 0 14 14" role="img" aria-label="Modified">
+    <title>Modified</title>
+    <circle cx="7" cy="7" r="3" fill="currentColor" />
   </Glyph>
 );

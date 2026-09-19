@@ -41,8 +41,8 @@ export interface TagRow {
   editable: boolean;
   /** Why this row cannot be edited, for a tooltip. */
   disabledReason: string | undefined;
-  /** How the draft differs from the last saved state. */
-  change: 'added' | 'modified' | undefined;
+  /** Whether the draft differs from the last saved state for this tag. */
+  changed: boolean;
 }
 
 export interface BuildTagRowsInput {
@@ -158,7 +158,7 @@ export const buildTagRows = (input: BuildTagRowsInput): TagRow[] => {
         : editable
           ? undefined
           : input.readOnlyReason,
-      change: savedLocal === local ? undefined : savedLocal === undefined ? 'added' : 'modified',
+      changed: savedLocal !== local,
     });
   }
 
@@ -170,11 +170,8 @@ export const buildTagRows = (input: BuildTagRowsInput): TagRow[] => {
 
 const invert = (value: TagValue): TagValue => (value === 'included' ? 'excluded' : 'included');
 
-/**
- * The entry the invert button writes: the opposite of what is inherited, or of what is declared
- * when nothing is inherited.
- */
-export const oppositeOf = (row: TagRow): TagValue => invert(row.inherited ?? row.local ?? 'included');
+/** The entry the invert button writes: the opposite of whatever currently applies. */
+export const oppositeOf = (row: TagRow): TagValue => invert(row.effective ?? 'included');
 
 const setLocal = (draft: string[], tag: string, value: TagValue | undefined): string[] => {
   const rest = draft.filter((entry) => entry !== tag && entry !== `!${tag}`);
@@ -188,13 +185,12 @@ const setLocal = (draft: string[], tag: string, value: TagValue | undefined): st
 export const toggleTag = (draft: string[], row: TagRow): string[] =>
   row.local !== undefined ? setLocal(draft, row.tag, undefined) : setLocal(draft, row.tag, row.inherited ?? 'included');
 
-/** Invert button: write the opposite entry, or drop it to go back to inheriting. */
-export const invertTag = (draft: string[], row: TagRow): string[] => {
-  const opposite = oppositeOf(row);
-  return row.local === opposite && row.inherited !== undefined
-    ? setLocal(draft, row.tag, undefined)
-    : setLocal(draft, row.tag, opposite);
-};
+/**
+ * Invert button: declare the opposite of whatever currently applies. It always writes a local
+ * entry, so flipping an inherited tag and flipping it back leaves the entry declaring the value
+ * itself. Unchecking the row is what returns it to inheriting.
+ */
+export const invertTag = (draft: string[], row: TagRow): string[] => setLocal(draft, row.tag, oppositeOf(row));
 
 /** Add a tag typed by the user. A leading '!' declares an exclusion. */
 export const addTag = (draft: string[], raw: string): string[] => {

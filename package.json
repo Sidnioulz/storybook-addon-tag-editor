@@ -1,12 +1,13 @@
 {
   "name": "storybook-addon-tag-editor",
   "version": "0.1.0",
-  "description": "Edit story tags from the Storybook sidebar",
+  "description": "Edit story and component tags from the Storybook sidebar",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Sidnioulz/storybook-addon-tag-editor.git"
   },
   "keywords": [
+    "storybook",
     "storybook-addon",
     "tags",
     "organize"
@@ -108,16 +109,9 @@
   "storybook": {
     "displayName": "Tag Editor",
     "supportedFrameworks": [
-      "react",
-      "vue",
-      "angular",
-      "web-components",
-      "ember",
-      "html",
-      "svelte",
-      "preact",
-      "react-native"
-    ]
+      "supported-frameworks"
+    ],
+    "icon": "https://raw.githubusercontent.com/Sidnioulz/storybook-addon-tag-editor/main/static/icon.png"
   },
   "packageManager": "pnpm@10.22.0+sha512.bf049efe995b28f527fd2b41ae0474ce29186f7edcb3bf545087bd61fbbebb2bf75362d1307fda09c2d288e1e499787ac12d4fcb617a974718a6051f2eee741c",
   "dependencies": {

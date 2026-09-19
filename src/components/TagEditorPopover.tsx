@@ -190,7 +190,7 @@ interface TagRowItemProps {
 }
 
 const TagRowItem = ({ row, onToggle, onInvert }: TagRowItemProps) => {
-  const { tag, local, inherited, inheritedFrom, effective, derived, editable, change } = row;
+  const { tag, local, inherited, inheritedFrom, effective, derived, editable, changed } = row;
   const { disabledReason } = row;
   const targetId = `tag-editor-${tag}`;
 
@@ -206,9 +206,7 @@ const TagRowItem = ({ row, onToggle, onInvert }: TagRowItemProps) => {
   const inheritedNote = inheritedFrom ? `Inherited through ${SOURCE_LABELS[inheritedFrom]}` : null;
   const showsInheritance = inheritedNote !== null && local === undefined;
 
-  const opposite = oppositeOf(row);
-  const returnsToInherited = local === opposite && inherited !== undefined;
-  const resultLabel = entryLabel(tag, returnsToInherited ? inherited : opposite);
+  const resultLabel = entryLabel(tag, oppositeOf(row));
   const invertTooltip = local === undefined ? `Add ${resultLabel} tag` : `Replace with ${resultLabel} tag`;
 
   const checkboxLabel = derived
@@ -246,8 +244,8 @@ const TagRowItem = ({ row, onToggle, onInvert }: TagRowItemProps) => {
         </ActionList.Text>
       </RowAction>
       <MarkSlot>
-        {change ? (
-          <ChangePill change={change} />
+        {changed ? (
+          <ChangePill />
         ) : (
           // Dropped once the entry declares the tag: the change mark carries that meaning.
           showsInheritance && (
@@ -365,7 +363,7 @@ export const TagEditorPopover = ({ entry, triggerRef, io, onClose }: TagEditorPo
     [layers, draft, saved, inheritedLayers, computedTags, knownTags, editable],
   );
 
-  const dirtyCount = rows.filter((row) => row.change).length;
+  const dirtyCount = rows.filter((row) => row.changed).length;
   const isDirty = dirtyCount > 0;
 
   useEffect(() => {

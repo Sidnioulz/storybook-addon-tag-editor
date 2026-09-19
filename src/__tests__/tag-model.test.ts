@@ -110,7 +110,7 @@ describe('buildTagRows', () => {
       derived: false,
       editable: true,
       effective: undefined,
-      change: 'modified',
+      changed: true,
     });
   });
 
@@ -132,15 +132,15 @@ describe('buildTagRows', () => {
       knownTags: ['untouched'],
     });
 
-    expect(row(rows, 'fresh').change).toBe('added');
-    expect(row(rows, 'old').change).toBeUndefined();
-    expect(row(rows, 'untouched').change).toBeUndefined();
+    expect(row(rows, 'fresh').changed).toBe(true);
+    expect(row(rows, 'old').changed).toBe(false);
+    expect(row(rows, 'untouched').changed).toBe(false);
   });
 
-  it('reports a flipped value as modified', () => {
+  it('reports a flipped value as changed', () => {
     const rows = build({ savedLocalTags: ['a'], draftLocalTags: ['!a'] });
 
-    expect(row(rows, 'a').change).toBe('modified');
+    expect(row(rows, 'a').changed).toBe(true);
   });
 
   it('carries the read-only reason onto every row', () => {
@@ -194,13 +194,23 @@ describe('invertTag', () => {
     expect(invertTag([], row(rows, 'docs'))).toEqual(['!docs']);
   });
 
-  it('returns to inheriting when the local entry is already the opposite', () => {
-    const rows = build({
-      draftLocalTags: ['!docs'],
-      inheritedLayers: [DEFAULTS, { source: 'preview', tags: ['docs'] }],
-    });
+  it('re-includes an excluded inherited tag as a local entry, not back to inheriting', () => {
+    const inheritedLayers = [DEFAULTS, { source: 'preview' as const, tags: ['docs'] }];
 
-    expect(invertTag(['!docs'], row(rows, 'docs'))).toEqual([]);
+    // Exclude the inherited tag...
+    const excluded = invertTag([], row(build({ inheritedLayers }), 'docs'));
+    expect(excluded).toEqual(['!docs']);
+
+    // ...then include it again: the entry declares it itself.
+    const reincluded = invertTag(excluded, row(build({ draftLocalTags: excluded, inheritedLayers }), 'docs'));
+    expect(reincluded).toEqual(['docs']);
+  });
+
+  it('leaves unchecking as the way back to inheriting', () => {
+    const inheritedLayers = [DEFAULTS, { source: 'preview' as const, tags: ['docs'] }];
+    const rows = build({ draftLocalTags: ['docs'], inheritedLayers });
+
+    expect(toggleTag(['docs'], row(rows, 'docs'))).toEqual([]);
   });
 
   it('flips a local entry that nothing supplies, rather than removing it', () => {
@@ -209,14 +219,23 @@ describe('invertTag', () => {
     expect(invertTag(['solo'], row(rows, 'solo'))).toEqual(['!solo']);
   });
 
-  it('picks the opposite of inheritance, then of the local value', () => {
+  it('adds an exclusion for a tag that does not apply yet', () => {
+    const rows = build({ knownTags: ['spare'] });
+
+    expect(invertTag([], row(rows, 'spare'))).toEqual(['!spare']);
+  });
+
+  it('opposes whatever currently applies', () => {
     const inherited = build({
       inheritedLayers: [DEFAULTS, { source: 'preview', tags: ['!docs'] }],
     });
     expect(oppositeOf(row(inherited, 'docs'))).toBe('included');
 
-    const localOnly = build({ draftLocalTags: ['solo'], knownTags: ['solo'] });
-    expect(oppositeOf(row(localOnly, 'solo'))).toBe('excluded');
+    const overridden = build({
+      draftLocalTags: ['docs'],
+      inheritedLayers: [DEFAULTS, { source: 'preview', tags: ['!docs'] }],
+    });
+    expect(oppositeOf(row(overridden, 'docs'))).toBe('excluded');
   });
 });
 
