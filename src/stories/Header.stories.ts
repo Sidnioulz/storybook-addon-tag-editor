@@ -1,35 +1,29 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import { fn } from 'storybook/test';
+
+import preview from '../../.storybook/preview';
 import { Header } from './Header';
 
-const meta: Meta<typeof Header> = {
+const meta = preview.meta({
   title: 'Example/Header',
   component: Header,
-  tags: ["blabla"],
+  tags: ['experimental'],
+  args: {
+    onLogin: fn(),
+    onLogout: fn(),
+    onCreateAccount: fn(),
+  },
   parameters: {
     // More on Story layout: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
-};
+});
 
-export default meta;
-type Story = StoryObj<typeof Header>;
-
-export const LoggedIn: Story = {
+export const LoggedIn = meta.story({
   args: {
     user: {
       name: 'Jane Doe',
     },
   },
+});
 
-  tags: [
-    "!test",
-    "!manifest",
-    "!autodocs",
-    "!blabla",
-    "design-reviewed",
-    "!dev",
-    "!experimental"
-  ],
-};
-
-export const LoggedOut: Story = {};
+export const LoggedOut = meta.story({});

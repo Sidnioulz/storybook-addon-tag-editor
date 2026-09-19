@@ -2,18 +2,29 @@
   "name": "storybook-addon-tag-editor",
   "version": "0.1.0",
   "description": "Edit story tags from the Storybook sidebar",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sidnioulz/storybook-addon-tag-editor.git"
+  },
   "keywords": [
     "storybook-addon",
     "tags",
     "organize"
   ],
   "license": "MIT",
-  "author": "Steve Dodier-Lazaro",
+  "author": "Steve Dodier-Lazaro <sidnioulz@gmail.com>",
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./preview": {
+      "types": "./dist/preview.d.ts",
+      "default": "./dist/preview.js"
     },
     "./preset": "./dist/preset.js",
     "./manager": "./dist/manager.js",
@@ -36,35 +47,48 @@
     "lint:fix": "pnpm lint --fix",
     "start": "run-p build:watch \"storybook --quiet\"",
     "storybook": "storybook dev -p ${PORT:-6006}",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "release": "pnpm build && pnpm semantic-release",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "chromatic": "chromatic"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@semantic-release/github": "^12.0.9",
+    "@semantic-release/npm": "^13.1.5",
     "@storybook/addon-docs": "https://pkg.pr.new/@storybook/addon-docs@aa7e796",
     "@storybook/icons": "^2.0.0",
     "@storybook/react-vite": "https://pkg.pr.new/@storybook/react-vite@aa7e796",
-    "@types/node": "^20",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^22.12.0",
     "@types/react": "^18.2.65",
     "@types/react-dom": "^18.2.21",
     "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/coverage-istanbul": "^5.0.1",
+    "chromatic": "^18.9.4",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-storybook": "next",
+    "jsdom": "^30.1.0",
     "npm-run-all2": "^8.0.4",
     "prettier": "^3.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "semantic-release": "^25.0.9",
     "storybook": "https://pkg.pr.new/storybook@aa7e796",
     "ts-dedent": "^2.2.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.44.1",
-    "vite": "^7.0.5"
+    "vite": "^7.0.5",
+    "vitest": "^5.0.1"
   },
   "peerDependencies": {
-    "storybook": "*"
+    "storybook": "^11.0.0-0"
   },
   "publishConfig": {
     "access": "public"
@@ -74,7 +98,8 @@
       "src/manager.tsx"
     ],
     "previewEntries": [
-      "src/index.ts"
+      "src/index.ts",
+      "src/preview.ts"
     ],
     "nodeEntries": [
       "src/preset.ts"

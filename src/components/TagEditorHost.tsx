@@ -16,6 +16,7 @@ export interface OpenTagEditorOptions {
   triggerRef: RefObject<HTMLButtonElement | null>;
 }
 
+let container: HTMLDivElement | null = null;
 let root: Root | null = null;
 
 const getTheme = () => {
@@ -29,12 +30,18 @@ const getTheme = () => {
 
 /** Render the tag editor popover in a standalone root, anchored to the context menu trigger. */
 export const openTagEditor = (options: OpenTagEditorOptions) => {
-  if (!root) {
-    const container = document.createElement('div');
+  if (!container) {
+    container = document.createElement('div');
     container.id = `${ADDON_ID}-root`;
-    document.body.appendChild(container);
-    root = createRoot(container);
   }
+  // Re-attach rather than trusting the cached node: anything that clears the body would otherwise
+  // leave the editor rendering into a detached element.
+  if (!container.isConnected) {
+    document.body.appendChild(container);
+    root?.unmount();
+    root = null;
+  }
+  root ??= createRoot(container);
   const close = () => root?.render(<></>);
   root.render(
     <ThemeProvider theme={getTheme()}>

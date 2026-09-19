@@ -1,7 +1,11 @@
-import type { Preview } from '@storybook/react-vite';
+import { definePreview } from '@storybook/react-vite';
 
-const preview: Preview = {
-  // Project-level tags, shown as 'project' provenance in the tag editor.
+import tagEditor from '../src/index';
+
+export default definePreview({
+  // Registered the way a user would, but from source rather than the package name.
+  addons: [tagEditor()],
+  // Project-level tags, shown as 'preview' provenance in the tag editor.
   // 'autodocs' generates a docs entry for every component unless negated.
   tags: ['autodocs', 'design-reviewed'],
   parameters: {
@@ -12,6 +16,4 @@ const preview: Preview = {
       },
     },
   },
-};
-
-export default preview;
+});

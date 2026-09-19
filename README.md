@@ -1,18 +1,53 @@
-# Storybook Tag Editor
+<div align="center">
+  <h1>Storybook Addon - Tag Editor</h1>
 
-Edit [story tags](https://storybook.js.org/docs/writing-stories/tags) from the Storybook sidebar.
+  <p>
+    This addon lets you edit <a href="https://storybook.js.org/docs/writing-stories/tags">tags</a> for a story, component or docs page from the Storybook <a href="https://storybook.js.org/docs/configure/user-interface/sidebar-and-urls">sidebar</a>. Open the context menu of a sidebar entry and pick <strong>Edit tags</strong>. A popover lets you add, remove or invert tags, and the addon writes your changes back to the source file.
+  </p>
 
-Adds an **Edit tags** entry to the context menu of component and docs entries. It opens a popover
-that shows every tag affecting the entry — where each one comes from — and lets you add, remove and
-negate tags. Changes are written back to the CSF file.
+  <p>
+    <img src="https://img.shields.io/badge/status-experimental-orange" alt="Status: Experimental" />
+    <a href="https://github.com/Sidnioulz/storybook-addon-tag-editor/commits"><img src="https://img.shields.io/github/commit-activity/m/Sidnioulz/storybook-addon-tag-editor" alt="commit activity" /></a>
+    <a href="https://github.com/Sidnioulz/storybook-addon-tag-editor/commits"><img src="https://img.shields.io/github/last-commit/Sidnioulz/storybook-addon-tag-editor" alt="last commit" /></a>
+    <a href="https://github.com/Sidnioulz/storybook-addon-tag-editor/issues/"><img src="https://img.shields.io/github/issues/Sidnioulz/storybook-addon-tag-editor" alt="open issues" /></a>
+    <a href="https://github.com/Sidnioulz/storybook-addon-tag-editor/actions/workflows/codeql.yml"><img src="https://github.com/Sidnioulz/storybook-addon-tag-editor/actions/workflows/codeql.yml/badge.svg?branch=main" alt="CodeQL status" /></a>
+    <a href="https://github.com/Sidnioulz/storybook-addon-tag-editor/actions/workflows/build.yml"><img src="https://github.com/Sidnioulz/storybook-addon-tag-editor/actions/workflows/build.yml/badge.svg?branch=main" alt="build status" /></a>
+    <a href="https://codecov.io/gh/Sidnioulz/storybook-addon-tag-editor"><img src="https://codecov.io/gh/Sidnioulz/storybook-addon-tag-editor/graph/badge.svg" alt="code coverage" /></a>
+    <a href="https://github.com/Sidnioulz/storybook-addon-tag-editor/graphs/contributors"><img src="https://img.shields.io/github/contributors/Sidnioulz/storybook-addon-tag-editor" alt="contributors" /></a>
+    <a href="https://github.com/Sidnioulz/storybook-addon-tag-editor/blob/main/CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="code of conduct: contributor covenant 2.1" /></a>
+    <a href="https://github.com/Sidnioulz/storybook-addon-tag-editor/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Sidnioulz/storybook-addon-tag-editor.svg" alt="license" /></a>
+    <a href="https://github.com/Sidnioulz/storybook-addon-tag-editor/network/members"><img src="https://img.shields.io/github/forks/Sidnioulz/storybook-addon-tag-editor" alt="forks" /></a>
+    <a href="https://github.com/Sidnioulz/storybook-addon-tag-editor/stargazers"><img src="https://img.shields.io/github/stars/Sidnioulz/storybook-addon-tag-editor" alt="stars" /></a>
+    <a href="https://github.com/sponsors/Sidnioulz"><img src="https://img.shields.io/badge/sponsor-30363D?logo=GitHub-Sponsors&logoColor=#EA4AAA" alt="sponsor this project" /></a>
+  </p>
+</div>
 
-## Requirements
+---
 
-Built on the experimental sidebar context menu addon API from
-[storybookjs/storybook#36316](https://github.com/storybookjs/storybook/pull/36316). Until that PR
-ships in a stable release, a canary build of Storybook is required:
+## 📔 Table of Contents
 
+<!-- no toc -->
+
+- [Table of Contents](#-table-of-contents)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Where Tags Come From](#-where-tags-come-from)
+- [Limitations](#-limitations)
+- [Contributing](#-contributing)
+- [Support](#-support)
+- [Contact](#-contact)
+- [Acknowledgments](#-acknowledgments)
+
+## 📦 Installation
+
+This addon needs Storybook 11 and Node 22.12 or later.
+
+> [!IMPORTANT]
+> It also uses the sidebar context menu API from [storybook#36316](https://github.com/storybookjs/storybook/pull/36316), which is not released yet. Until it ships, you need a canary build of Storybook.
+
+<!-- prettier-ignore -->
 ```jsonc
+// package.json
 {
   "devDependencies": {
     "storybook": "https://pkg.pr.new/storybook@aa7e796",
@@ -21,98 +56,182 @@ ships in a stable release, a canary build of Storybook is required:
 }
 ```
 
-Works in dev mode only; the sidebar context menu is not rendered in built Storybooks.
-
-## Installation
-
 ```sh
 pnpm add -D storybook-addon-tag-editor
 ```
 
-```ts
-// .storybook/main.ts
-export default {
-  addons: ['storybook-addon-tag-editor'],
-};
+```sh
+npm install -D storybook-addon-tag-editor
 ```
-
-## Usage
-
-Hover a component, story or MDX docs entry in the sidebar, open its context menu (⋯) and pick
-**Edit tags**. The one entry that does not offer it is the docs page Storybook synthesises for
-autodocs: it is generated from its component, so its tags belong there.
-
-Each row names the tag entry as it would be written: `foo`, or `!foo` where the tag is excluded.
-
-The checkbox says where that entry comes from:
-
-- **checked** — the entry declares the tag itself
-- **mixed** — the tag is inherited; an icon on the right tells you from where (`preview`, the
-  component a story or MDX page belongs to, or Storybook's `dev`/`test` defaults). Declaring it
-  locally makes the row determinate and drops the icon, since inheritance no longer decides the
-  value and the change mark now carries that meaning. Both marks share one column, so they line
-  up down the list.
-- **unchecked** — the tag is not applied; it is offered because the project uses it elsewhere, or
-  because the entry has just stopped declaring it
-- **checked and disabled** — it applies, but is attributable to nothing the editor can write, such
-  as a tag every child story of a component declares
-
-Rows keep the group they were in when the dialog opened, so editing one never makes it jump; they
-settle into place the next time you open the editor. Anything disabled says why in a tooltip.
-
-Storybook's own tags are treated by whether negating them means anything. Tags the indexer derives
-from what a file contains (`play-fn`, `attached-mdx`, …) are left out entirely. Tags Storybook
-applies itself (`dev`, `test`, `manifest`) stay editable and can be negated, but an entry can never
-simply stop mentioning them: the row falls back to inheriting instead of disappearing.
-
-Interactions:
-
-- The checkbox declares the inherited value on the entry, or stops declaring it.
-- The hover button (**Exclude** / **Include**) writes the opposite entry. On an inherited tag,
-  clicking it again drops the local entry and returns the row to inheriting.
-- The input filters tags; press Enter or click **Add tag** to create one. A leading `!` declares
-  an exclusion.
-- Changes are staged, marked with the sidebar's added and modified glyphs, and counted in the save
-  bar. While there are unsaved changes the dialog is modal, so a stray click cannot discard them;
-  clicking outside nudges the save button instead, unless reduced motion is preferred.
-- **Save** rewrites the tags in the source file, then closes the dialog. CSF files go through
-  `storybook/internal/csf-tools`; MDX files are parsed with remark and the `tags` attribute of
-  `<Meta>` is spliced at the offsets remark reports, so the rest of the page is untouched.
-
-## How it works
-
-- `manager.tsx` registers an `experimental_CONTEXT_MENU` addon and renders the popover anchored to
-  the menu trigger.
-- `preset.ts` registers an `experimental_serverChannel` handler that reads and writes tag data:
-  the entry's own tags, plus the inherited layers it resolves against. For an MDX page carrying
-  `of={…}`, it follows that import to the stories file and adds its tags as a component layer.
-- Inheritance is modelled as ordered layers, each with a source; later layers win. The popover
-  reaches the server through a `TagEditorIO` interface, which the stories mock.
-- Computed tags come from the story index; the popover fetches `index.json` to offer every tag
-  already used in the project.
-
-## Limitations
-
-- Test entries and sidebar groups have no tags of their own and are not offered.
-- Files whose tags are not a literal array of strings are read-only, in both CSF and MDX.
-- An MDX page needs a `<Meta>` block; its `tags` attribute is created if absent.
-- Saved CSF tag arrays are printed with double quotes; run your formatter if it prefers otherwise.
-- The mixed checkbox state is applied to the DOM node by hand, because Storybook's `Form.Checkbox`
-  styles `:indeterminate` but takes no such prop. A core change adding one is pending; once it
-  ships, `TriStateCheckbox` can be dropped.
-
-## Development
 
 ```sh
-pnpm install
-pnpm start   # builds the addon in watch mode and starts the demo Storybook
+yarn add -D storybook-addon-tag-editor
 ```
 
-The `Addon/Tag Editor` stories render the popover with mocked data. They cover every combination of
-inherited and locally declared value for one tag, the staged and reserved-name states, and the
-loading, load-failure, save-failure and read-only cases.
+Register the addon in `.storybook/main.ts`:
 
-The demo stories in `src/stories` exercise all tag layers: project tags (`autodocs`,
-`design-reviewed`), tags declared on a component, negations, an unattached MDX page
-(`Introduction.mdx`) and one attached to a component (`ButtonNotes.mdx`), whose rows show the
-component's tags as inherited.
+```ts
+// .storybook/main.ts
+import { defineMain } from '@storybook/react-vite/node';
+
+export default defineMain({
+  addons: ['storybook-addon-tag-editor'],
+});
+```
+
+And in `.storybook/preview.ts`, alongside your other addons:
+
+```ts
+// .storybook/preview.ts
+import { definePreview } from '@storybook/react-vite';
+import tagEditor from 'storybook-addon-tag-editor';
+
+export default definePreview({
+  addons: [tagEditor()],
+});
+```
+
+## 👀 Usage
+
+Hover an entry in the sidebar, open its context menu, and pick **Edit tags**.
+
+Autodocs pages do not offer the entry. Storybook generates them from their component, so edit the component instead.
+
+### Reading a Row
+
+Each row names the tag as it would be written in your file: `foo`, or `!foo` for an exclusion. The checkbox says where that entry comes from.
+
+| Checkbox          | Meaning                                                                      |
+| ----------------- | ---------------------------------------------------------------------------- |
+| Checked           | The entry declares the tag itself.                                           |
+| Mixed             | A parent layer supplies the tag. An icon on the right names the source.      |
+| Empty             | The tag does not apply. It is listed because the project uses it elsewhere.  |
+| Checked, disabled | The tag applies, but you cannot edit it here. The row says why in a tooltip. |
+
+### Editing Tags
+
+- The checkbox declares the tag on the entry, or stops declaring it.
+- The **Exclude** and **Include** buttons write the opposite entry. On an inherited tag, clicking again drops the entry and returns the row to inheriting.
+- The text field filters the list. Type a name and press Enter to add a tag. Start with `!` to add an exclusion.
+- **Save** writes the tags to your source file and closes the popover.
+
+Changes stay in the popover until you save. The editor marks them with the same glyphs the sidebar uses for new and modified entries, and counts them in the save bar. While changes are pending, clicking outside nudges the save button instead of closing the popover. Press `Escape` to leave without saving.
+
+## 🧬 Where Tags Come From
+
+Storybook resolves tags in layers. A tag declared on an entry overrides the layers above it, and `!tag` removes one.
+
+| Source               | Where it comes from                                                            |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `Storybook defaults` | The tags Storybook applies to everything: `dev`, `test`, `manifest`.           |
+| `preview`            | The `tags` array in `.storybook/preview.ts`.                                   |
+| `component`          | The CSF `meta` of a story, or the component an MDX page attaches to with `of`. |
+
+The editor treats Storybook's own tags by whether negating them means anything. It hides tags the indexer derives from file contents, such as `play-fn` and `attached-mdx`, because you cannot change them by editing tags. It keeps `dev`, `test` and `manifest` editable, so you can negate them, but an entry can never simply stop mentioning them.
+
+## 🐌 Limitations
+
+### Dev Mode Only
+
+Storybook renders the sidebar context menu in development only, so the addon does nothing in a built Storybook.
+
+### Static Tags Only
+
+The addon reads and writes tags with [`csf-tools`](https://github.com/storybookjs/storybook/tree/next/code/core/src/csf-tools) for CSF files and [remark](https://remark.js.org/) for MDX. Both need a literal array of strings. A file that computes its tags is read-only, and the editor says so.
+
+An MDX page needs a `<Meta>` block. The addon creates the `tags` attribute if the block has none.
+
+### Formatting
+
+Saved CSF tag arrays print with double quotes. Run your formatter afterwards if it prefers otherwise. MDX edits only touch the `tags` attribute, so the rest of the page keeps its formatting.
+
+## 👩🏽‍💻 Contributing
+
+### Code of Conduct
+
+Please read the [Code of Conduct](https://github.com/Sidnioulz/storybook-addon-tag-editor/blob/main/CODE_OF_CONDUCT.md) first.
+
+### Developer Certificate of Origin
+
+To ensure that contributors are legally allowed to share the content they contribute under the license terms of this project, contributors must adhere to the [Developer Certificate of Origin](https://developercertificate.org/) (DCO). All contributions made must be signed to satisfy the DCO. This is handled by a Pull Request check.
+
+> By signing your commits, you attest to the following:
+>
+> 1. The contribution was created in whole or in part by you and you have the right to submit it under the open source license indicated in the file; or
+> 2. The contribution is based upon previous work that, to the best of your knowledge, is covered under an appropriate open source license and you have the right under that license to submit that work with modifications, whether created in whole or in part by you, under the same open source license (unless you are permitted to submit under a different license), as indicated in the file; or
+> 3. The contribution was provided directly to you by some other person who certified 1., 2. or 3. and you have not modified it.
+> 4. You understand and agree that this project and the contribution are public and that a record of the contribution (including all personal information you submit with it, including your sign-off) is maintained indefinitely and may be redistributed consistent with this project or the open source license(s) involved.
+
+### Getting Started
+
+This project uses PNPM as a package manager, and needs Node 22.12 or later.
+
+- See the [installation instructions for PNPM](https://pnpm.io/installation)
+- Run `pnpm i`
+
+### Useful commands
+
+- `pnpm start` builds the addon in watch mode and starts the local Storybook
+- `pnpm build` builds and packages the addon code
+- `pnpm test` runs the test suite, `pnpm test:coverage` adds a coverage report
+- `pnpm check` type-checks the source
+- `pnpm lint` runs ESLint and Prettier
+
+### Tests
+
+Unit tests cover the tag model, the MDX reader and writer, the channel, the context menu rules and
+the preset, which runs against real files in a temporary directory.
+
+The stories double as component tests. `src/__tests__/TagEditorPopover.stories.test.tsx` composes
+every story with [portable stories](https://storybook.js.org/docs/api/portable-stories/portable-stories-vitest)
+and runs its play function under Vitest, so a scenario you can open in Storybook is also a test.
+Add a story rather than a bespoke render when you cover new behaviour.
+
+### Local Storybook
+
+The demo stories are written as CSF factories, and cover each layer: project tags in
+`.storybook/preview.ts`, tags on a component, tags on a story, negations, and two MDX pages.
+`ButtonNotes.mdx` attaches to the Button component, so its rows show the component's tags as
+inherited.
+
+The `Addon/Tag Editor` stories render the popover against mocked data. They cover every combination of inherited and declared value for one tag, along with the loading, failure and read-only states.
+
+### Migrating to a later Storybook version
+
+If you want to migrate the addon to support the latest version of Storybook, you can check out the [addon migration guide](https://storybook.js.org/docs/addons/addon-migration-guide).
+
+Dependabot skips `storybook` and `@storybook/*`, because both are pinned to a canary build. Bump them by hand when the context menu API lands in a release.
+
+### Release System
+
+This package auto-releases on pushes to `main` with [semantic-release](https://github.com/semantic-release/semantic-release). No changelog is maintained and the version number in `package.json` is not synchronised.
+
+## 🆘 Support
+
+Please [open an issue](https://github.com/Sidnioulz/storybook-addon-tag-editor/issues/new) for bug reports or code suggestions. Make sure to include a working Minimal Working Example for bug reports.
+
+## ✉️ Contact
+
+Steve Dodier-Lazaro · `@Frog` on the [Storybook Discord](https://discord.gg/storybook) - [LinkedIn](https://www.linkedin.com/in/stevedodierlazaro/)
+
+Project Link: [https://github.com/Sidnioulz/storybook-addon-tag-editor](https://github.com/Sidnioulz/storybook-addon-tag-editor)
+
+## 💛 Acknowledgments
+
+### Thanks
+
+- [Michael Shilman](https://github.com/shilman) for his help with addon internals
+- All the contributors to the [Storybook addon kit](https://github.com/storybookjs/addon-kit)
+
+### Built With
+
+[![Dependabot](https://img.shields.io/badge/Dependabot-025E8C?logo=dependabot&logoColor=white)](https://github.com/dependabot)
+[![ESLint](https://img.shields.io/badge/ESLint-4b32c3?logo=eslint&logoColor=white)](https://eslint.org/)
+[![GitHub](https://img.shields.io/badge/GitHub-0d1117?logo=github&logoColor=white)](https://github.com/solutions/ci-cd)
+[![Prettier](https://img.shields.io/badge/Prettier-f8bc45?logo=prettier&logoColor=black)](https://prettier.io/)
+[![remark](https://img.shields.io/badge/remark-000000?logo=remark&logoColor=white)](https://remark.js.org/)
+[![Semantic-Release](https://img.shields.io/badge/semantic--release-cccccc?logo=semantic-release&logoColor=black)](https://github.com/semantic-release/semantic-release)
+[![Storybook](https://cdn.jsdelivr.net/gh/storybookjs/brand@main/badge/badge-storybook.svg)](https://storybook.js.org/)
+[![tsup](https://img.shields.io/badge/tsup-fde047)](https://tsup.egoist.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vitest](https://img.shields.io/badge/Vitest-acd268?logo=vitest&logoColor=black)](https://vitest.dev/)

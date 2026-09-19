@@ -33,5 +33,12 @@ export default [
   },
   ...tseslint.configs.recommended,
   ...storybook.configs['flat/recommended'],
+  {
+    // Test doubles stand in for Storybook's own loosely typed APIs.
+    files: ['src/__tests__/**'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
   prettierRecommended,
 ];

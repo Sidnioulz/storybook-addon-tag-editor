@@ -271,7 +271,7 @@ const TagRowItem = ({ row, onToggle, onInvert }: TagRowItemProps) => {
           tooltip={invertTooltip}
           onClick={() => onInvert(row)}
         >
-          <InvertLabel>{excluded ? 'Include' : 'Exclude'}</InvertLabel>
+          <InvertLabel>Invert</InvertLabel>
         </ActionList.Button>
       )}
     </ActionList.HoverItem>

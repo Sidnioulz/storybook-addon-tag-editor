@@ -1,51 +1,44 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-
-import { Button } from './Button';
 import { fn } from 'storybook/test';
 
-// More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
-const meta: Meta<typeof Button> = {
+import preview from '../../.storybook/preview';
+import { Button } from './Button';
+
+const meta = preview.meta({
   title: 'Example/Button',
   component: Button,
-  // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
   argTypes: {
     backgroundColor: { control: 'color' },
   },
   args: {
     onClick: fn(),
   },
-  // '!autodocs' negates the project-level 'autodocs' tag for this component.
-  tags: ['stable', 'frog', '!dev', 'autodocs'],
-};
+  // '!autodocs' negates the project tag, so this component gets no generated docs page.
+  tags: ['!autodocs', 'stable'],
+});
 
-export default meta;
-type Story = StoryObj<typeof Button>;
-
-// More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-export const Primary: Story = {
-  // More on args: https://storybook.js.org/docs/react/writing-stories/args
+export const Primary = meta.story({
   args: {
     primary: true,
     label: 'Button',
   },
-};
+});
 
-export const Secondary: Story = {
+export const Secondary = meta.story({
   args: {
     label: 'Button',
   },
-};
+});
 
-export const Large: Story = {
+export const Large = meta.story({
   args: {
     size: 'large',
     label: 'Button',
   },
-};
+});
 
-export const Small: Story = {
+export const Small = meta.story({
   args: {
     size: 'small',
     label: 'Button',
   },
-};
+});

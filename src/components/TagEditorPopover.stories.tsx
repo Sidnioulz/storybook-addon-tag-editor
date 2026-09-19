@@ -243,3 +243,59 @@ export const SavingClosesTheDialog: Story = {
     await expect(args.onClose).toHaveBeenCalled();
   },
 };
+
+export const AddingANewTag: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(await canvas.findByPlaceholderText('Filter or add tags…'), 'brand-new');
+    await userEvent.click(await canvas.findByRole('button', { name: /Add brand-new tag/ }));
+
+    await expect(await canvas.findByRole('checkbox', { name: /Stop declaring brand-new/ })).toBeChecked();
+  },
+};
+
+export const ResettingChanges: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(await canvas.findByRole('checkbox', { name: /Declare experimental/ }));
+    await expect(await canvas.findByText('1 unsaved change')).toBeInTheDocument();
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Reset' }));
+
+    await expect(canvas.queryByText(/unsaved change/)).not.toBeInTheDocument();
+    await expect(await canvas.findByRole('checkbox', { name: /Declare experimental/ })).not.toBeChecked();
+  },
+};
+
+/** Removing a tag leaves an empty box in place rather than greying the row out. */
+export const RemovingADeclaredTag: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkbox = await canvas.findByRole('checkbox', { name: /Stop declaring stable/ });
+    await userEvent.click(checkbox);
+
+    const after = await canvas.findByRole('checkbox', { name: /Declare stable/ });
+    await expect(after).not.toBeChecked();
+    await expect(after).toBeEnabled();
+    await expect(await canvas.findByText('1 unsaved change')).toBeInTheDocument();
+  },
+};
+
+export const ClosingWithEscape: Story = {
+  play: async ({ args }) => {
+    await userEvent.keyboard('{Escape}');
+
+    await expect(args.onClose).toHaveBeenCalled();
+  },
+};
+
+export const DisabledRowsExplainWhy: Story = {
+  ...MdxWithoutMeta,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const checkbox = await canvas.findByRole('checkbox', { name: /Declare dev/ });
+
+    await expect(checkbox).toBeDisabled();
+    await expect(checkbox.closest('label')).toHaveAttribute('aria-disabled', 'true');
+  },
+};

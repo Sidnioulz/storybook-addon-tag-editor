@@ -1,0 +1,33 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directories:
+      - '/'
+    schedule:
+      interval: 'weekly'
+    versioning-strategy: increase
+    assignees:
+      - 'sidnioulz'
+    reviewers:
+      - 'sidnioulz'
+    groups:
+      all:
+        patterns:
+          - '*'
+    # Storybook is pinned to a canary build until storybook#36316 is released.
+    ignore:
+      - dependency-name: '@storybook/*'
+      - dependency-name: 'storybook'
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    assignees:
+      - 'sidnioulz'
+    reviewers:
+      - 'sidnioulz'
+    groups:
+      all:
+        patterns:
+          - '*'
